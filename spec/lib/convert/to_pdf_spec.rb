@@ -48,7 +48,6 @@ RSpec.describe Vizualizpl::Convert::ToJson do
   end
 
   it 'has a version number' do
-    binding.pry # rubocop:disable Lint/Debugger
     Vizualizpl::Convert::ToPdf.new(zpl: zpl).perform
   end
 end

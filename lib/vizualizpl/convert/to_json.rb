@@ -3,10 +3,19 @@
 module Vizualizpl
   module Convert
     class ToJson
+      ZPL_TO_CSS_FONTS = {
+        "0" => "Courier, monospace",        # Zebra ZPL Font (Zebra 0)
+        "A" => "Courier, monospace",        # Zebra ZPL Font (Zebra A)
+        "B" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra B)
+        "C" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra C)
+        "D" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra D)
+        "F" => "Arial, sans-serif"          # Zebra ZPL Font (Zebra F)
+      }
       def initialize(zpl:, dpi: 203, screen_dpi: 96)
         @zpl_string = zpl.gsub("\n", '')
         @dpi = dpi
         @screen_dpi = screen_dpi
+        @font_family = ZPL_TO_CSS_FONTS['0']
         @font_size = 24
         @position_x = 0
         @position_y = 0
@@ -23,7 +32,7 @@ module Vizualizpl
           next if item.start_with?('^FS')
           next if item.start_with?('^FR')
 
-          new_font_size(item) if item.start_with?('^CF0')
+          new_font(item) if item.start_with?('^CF')
           new_position(item) if item.start_with?('^FO')
           new_graphic_box(item) if item.start_with?('^GB')
           new_text_element(item) if item.start_with?('^FD')
@@ -31,6 +40,7 @@ module Vizualizpl
           set_barcode_parameters(item) if item.start_with?('^BY')
         end
 
+        binding.pry
         output = { elements: @elements, height: 1218, width: 812 }
         puts output
         output
@@ -49,10 +59,13 @@ module Vizualizpl
         }
       end
 
-      def new_font_size(item)
-        points = item.gsub('^CF0,', '').to_i
+      def new_font(item)
+        vals = item.gsub('^CF,', '').split(',')
 
+        points = vals.last.to_i
         @font_size = points * (@screen_dpi / 72)
+
+        @font_family = ZPL_TO_CSS_FONTS[vals.first]
       end
 
       def new_text_element(item)
@@ -63,7 +76,8 @@ module Vizualizpl
           position_x: @position_x,
           position_y: @position_y,
           font_size: @font_size,
-          value: value
+          value: value,
+          font_family: @font_family
         }
 
         element = element.merge(@barcode_params) if @barcode_on
@@ -119,7 +133,7 @@ module Vizualizpl
 
       def dots_to_pixels(dots)
         inches = dots.to_f / @dpi
-        pixels = inches * @screen_dpi
+        pixels = inches * @dpi
         pixels.round
       end
     end
