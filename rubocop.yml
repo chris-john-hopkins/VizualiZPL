@@ -1,0 +1,74 @@
+inherit_from: .rubocop_todo.yml
+
+# 6) Ignore config for now.
+AllCops:
+  NewCops: disable
+  DisplayCopNames: true
+  Exclude:
+    - 'bin/*'
+    - 'db/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - '.bundle/**/*'
+    - 'config/**/*'
+    - 'lib/generators/invoice_policy/templates/**/*'
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'spec/**/*'
+
+# 1) Exclude spec files as rspec expectations/matchers can be complicated for rubocop to
+# parse, but simple to visually parse
+Metrics/AbcSize:
+  Max: 25
+  Exclude:
+    - 'spec/**/*'
+
+# 1) the strong parameters attribute list in the controllers can be
+# quite long and easier to visually parse when on multiple lines
+Metrics/MethodLength:
+  Exclude:
+    - 'app/controllers/**/*'
+    - 'spec/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - '**/spec/**/*.rb'
+    - '**/config/**/*.rb'
+
+Naming/PredicateName:
+  Exclude:
+    - 'app/serializers/*'
+
+Metrics/ClassLength:
+  Max: 200
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'spec/features/**/*'
+  AllowedPatterns:
+    - 'UNIQUE WHERE most_recent'
+
+Style/Documentation:
+  Enabled: false
+Style/DateTime:
+  Enabled: false
+Style/Lambda:
+  EnforcedStyle: literal
+Style/StringConcatenation:
+  Enabled: false
+Style/WordArray:
+  EnforcedStyle: percent
+  MinSize: 3
+Style/ConditionalAssignment:
+  Enabled: false
+
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
