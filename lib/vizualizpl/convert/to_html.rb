@@ -1,4 +1,7 @@
-require 'json'
+require 'barby'
+require 'barby/barcode/code_128'
+require 'barby/outputter/png_outputter'
+require 'base64'
 
 module Vizualizpl
   module Convert
@@ -17,12 +20,21 @@ module Vizualizpl
           when 'text'
             html += "<div style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px; font-size: #{element[:font_size]}px; font-family: #{element[:font_family]};\">#{element[:value]}</div>"
           when 'barcode'
-            html += "<div style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px; font-size: #{element[:font_size]}px;\">Barcode: #{element[:value]}</div>"
+            barcode = generate_barcode(element)
+            html += "<img src='data:image/png;base64,#{Base64.encode64(barcode)}' style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px;\" />"
           end
         end
-        binding.pry
         html += '</div>'
         html
+      end
+
+
+      private
+
+      def generate_barcode(element)
+        barcode = Barby::Code128B.new(element[:value])
+        png = barcode.to_png(xdim: element[:module_width], height: element[:barcode_height_in_pixels])
+        png.to_s
       end
     end
   end

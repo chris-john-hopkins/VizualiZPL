@@ -48,7 +48,7 @@ RSpec.describe Vizualizpl::Convert::ToJson do
   end
 
   it 'has a version number' do
-    Vizualizpl::Convert::ToPdf.new(zpl: zpl).perform
+    puts Vizualizpl::Convert::ToPdf.new(zpl: zpl).perform
   end
 end
 # rubocop:enable Metrics/BlockLength

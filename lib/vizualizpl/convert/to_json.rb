@@ -4,7 +4,7 @@ module Vizualizpl
   module Convert
     class ToJson
       ZPL_TO_CSS_FONTS = {
-        "0" => "Courier, monospace",        # Zebra ZPL Font (Zebra 0)
+        "0" => "monospace",        # Zebra ZPL Font (Zebra 0)
         "A" => "Courier, monospace",        # Zebra ZPL Font (Zebra A)
         "B" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra B)
         "C" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra C)
@@ -40,10 +40,7 @@ module Vizualizpl
           set_barcode_parameters(item) if item.start_with?('^BY')
         end
 
-        binding.pry
-        output = { elements: @elements, height: 1218, width: 812 }
-        puts output
-        output
+        { elements: @elements, height: 1218, width: 812 }
       end
       # rubocop:enable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
 
@@ -53,7 +50,7 @@ module Vizualizpl
         values = item.gsub('^BY', '').split(',')
 
         @barcode_params = {
-          module_width: values[0].to_i,
+          module_width:  dots_to_pixels(values[0].to_i),
           wide_bar_to_narrow_bar_ratio: values[1].to_i,
           barcode_height_in_pixels: dots_to_pixels(values[2].to_i)
         }
