@@ -3,7 +3,7 @@
 require 'vizualizpl'
 
 # rubocop:disable Metrics/BlockLength
-RSpec.describe Vizualizpl::Convert::ToJson do
+RSpec.describe Vizualizpl::Convert::ToPdf do
   let(:zpl) do
     "^XA
     ^FX Top section with logo, name and address.

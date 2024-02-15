@@ -3,7 +3,7 @@
 require 'vizualizpl'
 
 # rubocop:disable Metrics/BlockLength
-RSpec.describe Vizualizpl::Convert::ToJson do
+RSpec.describe Vizualizpl::Convert::ToHash do
   let(:zpl) do
     "^XA
     ^FX Top section with logo, name and address.
@@ -48,7 +48,7 @@ RSpec.describe Vizualizpl::Convert::ToJson do
   end
 
   it 'has a version number' do
-    Vizualizpl::Convert::ToJson.new(zpl: zpl).perform
+    Vizualizpl::Convert::ToHash.new(zpl: zpl).perform
   end
 end
 # rubocop:enable Metrics/BlockLength

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'vizualizpl/convert/to_json'
+require_relative 'vizualizpl/convert/to_hash'
 require_relative 'vizualizpl/convert/to_html'
 require_relative 'vizualizpl/convert/to_pdf'
 
