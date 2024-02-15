@@ -103,7 +103,7 @@ module Vizualizpl
 
         width = values[0]
         height = values[1]
-        border_size = values[2]
+        border_size = values[2].to_i / 4 | 2
 
         element = {
           type: 'graphic_box',

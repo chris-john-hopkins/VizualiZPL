@@ -16,7 +16,7 @@ module Vizualizpl
         @hash[:elements].each do |element|
           case element[:type]
           when 'graphic_box'
-            html += "<div style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px; width: #{element[:width]}px; height: #{element[:height]}px; border: 1px solid black;\"></div>"
+            html += "<div style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px; width: #{element[:width]}px; height: #{element[:height]}px; box-sizing: border-box; border: #{element[:border_size]}px solid black;\"></div>"
           when 'text'
             html += "<div style=\"position: absolute; left: #{element[:position_x]}px; top: #{element[:position_y]}px; font-size: #{element[:font_size]}px; font-family: #{element[:font_family]};\">#{element[:value]}</div>"
           when 'barcode'
@@ -25,6 +25,7 @@ module Vizualizpl
           end
         end
         html += '</div>'
+        puts html
         html
       end
 
