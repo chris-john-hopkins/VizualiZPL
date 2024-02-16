@@ -2,9 +2,9 @@
 
 module Vizualizpl
   module Convert
-    class ToJson
+    class ToHash
       ZPL_TO_CSS_FONTS = {
-        "0" => "monospace",        # Zebra ZPL Font (Zebra 0)
+        "0" => "Helvetica, monospace",        # Zebra ZPL Font (Zebra 0)
         "A" => "Courier, monospace",        # Zebra ZPL Font (Zebra A)
         "B" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra B)
         "C" => "Arial, sans-serif",         # Zebra ZPL Font (Zebra C)
@@ -12,7 +12,7 @@ module Vizualizpl
         "F" => "Arial, sans-serif"          # Zebra ZPL Font (Zebra F)
       }
       def initialize(zpl:, dpi: 203, screen_dpi: 96)
-        @zpl_string = zpl.gsub("\n", '')
+        @zpl_string = zpl.gsub("\n", ' ')
         @dpi = dpi
         @screen_dpi = screen_dpi
         @font_family = ZPL_TO_CSS_FONTS['0']
@@ -21,6 +21,7 @@ module Vizualizpl
         @position_y = 0
         @elements = []
         @barcode_on = false
+        @qr_code_on = false
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
@@ -33,18 +34,42 @@ module Vizualizpl
           next if item.start_with?('^FR')
 
           new_font(item) if item.start_with?('^CF')
+          new_image_element(item) if item.start_with?('^GFA')
           new_position(item) if item.start_with?('^FO')
           new_graphic_box(item) if item.start_with?('^GB')
           new_text_element(item) if item.start_with?('^FD')
           turn_barcode_mode_on if item.start_with?('^BC')
+          turn_qr_code_mode_on if item.start_with?('^BQN')
           set_barcode_parameters(item) if item.start_with?('^BY')
         end
 
+        binding.pry
         { elements: @elements, height: 1218, width: 812 }
       end
       # rubocop:enable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
 
       private
+
+      def new_image_element(item)
+        values = item.gsub('^GF', '').split(',')
+        binary_byte_count = values[1]
+        graphic_field_count = values[2]
+        bytes_per_row = values[3]
+
+        graphic_data = values[4..].join(',')  # Assuming the graphic data is provided as a string
+
+        element = {
+          type: 'image',
+          binary_byte_count: ,
+          graphic_field_count:,
+          bytes_per_row:,
+          position_x: @position_x,
+          position_y: @position_y,
+          graphic_data: graphic_data,
+        }
+
+        @elements << element
+      end
 
       def set_barcode_parameters(item)
         values = item.gsub('^BY', '').split(',')
@@ -57,7 +82,7 @@ module Vizualizpl
       end
 
       def new_font(item)
-        vals = item.gsub('^CF,', '').split(',')
+        vals = item.gsub('^CF', '').split(',')
 
         points = vals.last.to_i
         @font_size = points * (@screen_dpi / 72)
@@ -78,7 +103,7 @@ module Vizualizpl
         }
 
         element = element.merge(@barcode_params) if @barcode_on
-        @barcode_on = false #ensure we're no longer in barcode mode
+        reset_barcode_modes #ensure we're no longer in barcode mode
         @elements << element
       end
 
@@ -89,6 +114,10 @@ module Vizualizpl
 
       def turn_barcode_mode_on
         @barcode_on = true
+      end
+
+      def turn_qr_code_mode_on
+        @qr_code_on = true
       end
 
       def text_element_type
